@@ -1,6 +1,5 @@
 package com.phonegap.plugins.twiliovoice;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -14,11 +13,10 @@ import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.twilio.voice.Call;
 import com.twilio.voice.CallException;
 import com.twilio.voice.CallInvite;
@@ -287,13 +285,16 @@ public class TwilioVoicePlugin extends CordovaPlugin {
                     String accessToken = arguments.getString(0);
                     String number = arguments.getString(1);
                     Map<String, String> map = new HashMap();
-                    map.put("To", number);
-                    map.put("accessToken", accessToken);
-
-                    ConnectOptions connectOptions = new ConnectOptions.Builder(accessToken)
+                    if (number != "null") {
+                        map.put("To", number);
+                        map.put("accessToken", accessToken);
+                        ConnectOptions connectOptions = new ConnectOptions.Builder(accessToken)
                             .params(map)
                             .build();
-                    mCall = Voice.connect(cordova.getActivity(), connectOptions, mCallListener);
+                        mCall = Voice.connect(cordova.getActivity(), connectOptions, mCallListener);
+                    } else {
+                        mCall = Voice.connect(cordova.getActivity(), accessToken, mCallListener);
+                    }
                 } catch (Exception e) {
                     Log.e(TAG, e.toString());
                 }
