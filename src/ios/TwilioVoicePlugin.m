@@ -171,13 +171,19 @@ static NSString *const kTwimlParamTo = @"To";
                 NSString *incomingCallAppName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"TVPIncomingCallAppName"];
                 [self performStartCallActionWithUUID:uuid handle:incomingCallAppName];
             } else {
-                NSLog(@"Making call to with params %@", self.outgoingCallParams);
-                TVOConnectOptions *connectOptions = [TVOConnectOptions optionsWithAccessToken:self.accessToken
-                                                                                        block:^(TVOConnectOptionsBuilder *builder) {
-                                                                                            builder.params = @{kTwimlParamTo:self.outgoingCallParams[@"To"]};
-                                                                                        }];
-                self.call = [TwilioVoice connectWithOptions:connectOptions delegate:self];
-                self.outgoingCallParams = nil;
+                if (self.outgoingCallParams) {
+                    NSLog(@"Making call to with params %@", self.outgoingCallParams);
+                    TVOConnectOptions *connectOptions = [TVOConnectOptions optionsWithAccessToken:self.accessToken
+                                                                                            block:^(TVOConnectOptionsBuilder *builder) {
+                                                                                                builder.params = @{kTwimlParamTo:self.outgoingCallParams[@"To"]};
+                                                                                            }];
+                    self.call = [TwilioVoice connectWithOptions:connectOptions delegate:self];
+                    self.outgoingCallParams = nil;
+                } else {
+                    NSLog(@"Making call to with token %@", self.accessToken);
+                    self.call = [TwilioVoice connectWithAccessToken:self.accessToken delegate:self];
+                    self.outgoingCallParams = nil;
+                }
             }
         }
     }

@@ -287,13 +287,16 @@ public class TwilioVoicePlugin extends CordovaPlugin {
                     String accessToken = arguments.getString(0);
                     String number = arguments.getString(1);
                     Map<String, String> map = new HashMap();
-                    map.put("To", number);
-                    map.put("accessToken", accessToken);
-
-                    ConnectOptions connectOptions = new ConnectOptions.Builder(accessToken)
+                    if (number != "null") {
+                        map.put("To", number);
+                        map.put("accessToken", accessToken);
+                        ConnectOptions connectOptions = new ConnectOptions.Builder(accessToken)
                             .params(map)
                             .build();
-                    mCall = Voice.connect(cordova.getActivity(), connectOptions, mCallListener);
+                        mCall = Voice.connect(cordova.getActivity(), connectOptions, mCallListener);
+                    } else {
+                        mCall = Voice.connect(cordova.getActivity(), accessToken, mCallListener);
+                    }
                 } catch (Exception e) {
                     Log.e(TAG, e.toString());
                 }
